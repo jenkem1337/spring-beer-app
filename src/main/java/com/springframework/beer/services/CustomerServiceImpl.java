@@ -2,6 +2,7 @@ package com.springframework.beer.services;
 
 import com.springframework.beer.model.Customer;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -75,5 +76,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public void deleteCustomerById(UUID customerId) {
         customerMap.remove(customerId);
+    }
+
+    @Override
+    public void patchUpdateCustomerById(UUID customerId, Customer customer) {
+        var existing = customerMap.get(customerId);
+        if(StringUtils.hasText(customer.getCustomerName())){
+            existing.setCustomerName(customer.getCustomerName());
+        }
+        existing.setVersion(existing.getVersion() + 1);
+        existing.setLastModifiedDate(LocalDateTime.now());
     }
 }
