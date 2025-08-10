@@ -3,10 +3,10 @@ package com.springframework.beer.controller;
 import com.springframework.beer.model.Customer;
 import com.springframework.beer.services.CustomerService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -16,11 +16,19 @@ import java.util.UUID;
 @RequestMapping("/api/v1/customer")
 public class CustomerController {
     private final CustomerService customerService;
+
     @RequestMapping(method = RequestMethod.GET)
     public List<Customer> listCustomers(){
         return customerService.listCustomers();
     }
 
+    @PostMapping
+    public ResponseEntity<Customer> saveNewCustomer(@RequestBody Customer customer) {
+        var savedCustomer = customerService.saveNewCustomer(customer);
+        var httpHeader = new HttpHeaders();
+        httpHeader.add("Location", "/api/v1/customer/"+savedCustomer.getId());
+        return new ResponseEntity<>(savedCustomer, httpHeader, HttpStatus.CREATED);
+    }
     @RequestMapping(value = "{customerId}",method = RequestMethod.GET)
     public Customer getCustomerById(@PathVariable("customerId") UUID customerId){
         return customerService.getCustomerById(customerId);
