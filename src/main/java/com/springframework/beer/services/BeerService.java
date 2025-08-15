@@ -1,18 +1,19 @@
 package com.springframework.beer.services;
 
-import com.springframework.beer.model.Beer;
+import com.springframework.beer.model.BeerDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface BeerService {
-    Beer getBeerById(UUID id);
-    List<Beer> listBeers();
-    Beer saveNewBeer(Beer beer);
+    Optional<BeerDTO> getBeerById(UUID id);
+    List<BeerDTO> listBeers();
+    BeerDTO saveNewBeer(BeerDTO beerDTO);
 
-    void updateBeerById(UUID beerId, Beer beer);
+    Optional<BeerDTO> updateBeerById(UUID beerId, BeerDTO beerDTO);
 
-    void deleteBeerById(UUID beerId);
+    boolean deleteBeerById(UUID beerId);
 
-    void patchUpdateBeerById(UUID beerId, Beer beer);
+    Optional<BeerDTO> patchUpdateBeerById(UUID beerId, BeerDTO beerDTO);
 }

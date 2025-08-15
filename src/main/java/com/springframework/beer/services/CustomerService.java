@@ -1,18 +1,19 @@
 package com.springframework.beer.services;
 
-import com.springframework.beer.model.Customer;
+import com.springframework.beer.model.CustomerDTO;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface CustomerService {
-    List<Customer> listCustomers();
-    Customer getCustomerById(UUID id);
-    Customer saveNewCustomer(Customer customer);
+    List<CustomerDTO> listCustomers();
+    Optional<CustomerDTO> getCustomerById(UUID id);
+    CustomerDTO saveNewCustomer(CustomerDTO customerDTO);
 
-    void updateCustomerById(UUID customerId, Customer customer);
+    Optional<CustomerDTO> updateCustomerById(UUID customerId, CustomerDTO customerDTO);
 
-    void deleteCustomerById(UUID customerId);
+    boolean deleteCustomerById(UUID customerId);
 
-    void patchUpdateCustomerById(UUID customerId, Customer customer);
+    Optional<CustomerDTO> patchUpdateCustomerById(UUID customerId, CustomerDTO customerDTO);
 }
