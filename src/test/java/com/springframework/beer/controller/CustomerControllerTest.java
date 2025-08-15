@@ -1,8 +1,7 @@
 package com.springframework.beer.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.springframework.beer.model.Customer;
+import com.springframework.beer.model.CustomerDTO;
 import com.springframework.beer.services.CustomerService;
 import com.springframework.beer.services.CustomerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,9 +15,9 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
-import static org.hamcrest.Matchers.everyItem;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -36,7 +35,7 @@ public class CustomerControllerTest {
     ArgumentCaptor<UUID> uuidArgumentCaptor;
 
     @Captor
-    ArgumentCaptor<Customer> customerArgumentCaptor;
+    ArgumentCaptor<CustomerDTO> customerArgumentCaptor;
     @Autowired
     MockMvc mockMvc;
 
@@ -63,7 +62,7 @@ public class CustomerControllerTest {
     @Test
     void getCustomerById() throws Exception {
         var customer = customerServiceImpl.listCustomers().get(0);
-        given(customerService.getCustomerById(customer.getId())).willReturn(customer);
+        given(customerService.getCustomerById(customer.getId())).willReturn(Optional.of(customer));
 
         mockMvc.perform(get("/api/v1/customer/" + customer.getId().toString()).accept(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(customer.getId().toString())))
@@ -75,7 +74,7 @@ public class CustomerControllerTest {
         var customer = customerServiceImpl.listCustomers().getFirst();
         customer.setId(null);
         customer.setVersion(null);
-        given(customerService.saveNewCustomer(any(Customer.class))).willReturn(customerServiceImpl.listCustomers().get(1));
+        given(customerService.saveNewCustomer(any(CustomerDTO.class))).willReturn(customerServiceImpl.listCustomers().get(1));
 
         mockMvc.perform(post("/api/v1/customer")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,7 +93,7 @@ public class CustomerControllerTest {
                 .content(objectMapper.writeValueAsString(customer)))
                 .andExpect(status().isNoContent());
 
-        verify(customerService, times(1)).updateCustomerById(any(UUID.class), any(Customer.class));
+        verify(customerService, times(1)).updateCustomerById(any(UUID.class), any(CustomerDTO.class));
     }
 
     @Test
@@ -127,5 +126,14 @@ public class CustomerControllerTest {
 
         assertThat(customer.getId()).isEqualTo(uuidArgumentCaptor.getValue());
         assertThat(customerMap.get("customerName")).isEqualTo(customerArgumentCaptor.getValue().getCustomerName());
+    }
+
+    @Test
+    void getCustomerByIdNotFoundException() throws Exception {
+        given(customerService.getCustomerById(any(UUID.class))).willReturn(Optional.empty());
+
+        mockMvc.perform(get("/api/v1/customer/"+UUID.randomUUID())).andExpect(
+                status().isNotFound()
+        );
     }
 }
