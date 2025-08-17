@@ -86,8 +86,8 @@ public class CustomerControllerTest {
     @Test
     void updateCustomerById() throws Exception {
         var customer = customerServiceImpl.listCustomers().getFirst();
-
-        mockMvc.perform(put("/api/v1/customer/"+customer.getId().toString())
+        given(customerService.updateCustomerById(any(UUID.class), any(CustomerDTO.class))).willReturn(Optional.of(customer));
+        mockMvc.perform(put("/api/v1/customer/"+customer.getId())
                 .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(customer)))
@@ -99,7 +99,7 @@ public class CustomerControllerTest {
     @Test
     void deleteCustomerById() throws Exception {
         var customer = customerServiceImpl.listCustomers().getFirst();
-
+        given(customerService.deleteCustomerById(any(UUID.class))).willReturn(true);
         mockMvc.perform(delete("/api/v1/customer/"+customer.getId().toString())
                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
@@ -115,7 +115,7 @@ public class CustomerControllerTest {
 
         var customerMap = new HashMap<String, String>();
         customerMap.put("customerName", "Mehmet");
-
+        given(customerService.patchUpdateCustomerById(any(UUID.class), any(CustomerDTO.class))).willReturn(Optional.of(customer));
         mockMvc.perform(patch("/api/v1/customer/"+customer.getId().toString())
                         .accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
