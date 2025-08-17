@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class BeerController {
         return new ResponseEntity<>(null, HttpStatus.NO_CONTENT);
     }
     @PutMapping("{beerId}")
-    public ResponseEntity<Void> updateBeerById(@PathVariable("beerId") UUID beerId, @RequestBody BeerDTO beerDTO){
+    public ResponseEntity<Void> updateBeerById(@PathVariable("beerId") UUID beerId, @Validated @RequestBody BeerDTO beerDTO){
         log.debug(beerId.toString());
         if(beerService.updateBeerById(beerId, beerDTO).isEmpty()){
             throw new NotFoundException();
@@ -43,10 +44,10 @@ public class BeerController {
         return new ResponseEntity<>(null,HttpStatus.NO_CONTENT);
     }
     @PostMapping
-    public ResponseEntity<BeerDTO> saveNewBeer(@RequestBody BeerDTO beerDTO) {
+    public ResponseEntity<BeerDTO> saveNewBeer(@Validated  @RequestBody BeerDTO beerDTO) {
         var savedBeer = beerService.saveNewBeer(beerDTO);
         var httpHeader = new HttpHeaders();
-        httpHeader.add("Location", "/api/v1/beerDTO/"+savedBeer.getId().toString());
+        httpHeader.add("Location", "/api/v1/beer/"+savedBeer.getId().toString());
         return new ResponseEntity<>(savedBeer, httpHeader,HttpStatus.CREATED);
     }
     @RequestMapping(method = RequestMethod.GET)
