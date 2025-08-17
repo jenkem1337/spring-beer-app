@@ -53,6 +53,20 @@ class BeerControllerTest {
     }
 
     @Test
+    void saveNewBeerWithNullBeerName() throws Exception {
+        var dto = BeerDTO.builder().build();
+        given(beerService.saveNewBeer(any(BeerDTO.class))).willReturn(beerServiceImpl.listBeers().getFirst());
+
+        var response = mockMvc.perform(post("/api/v1/beer")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(dto)))
+                .andExpect(jsonPath("$.length()", is(6)))
+                .andExpect(status().isBadRequest()).andReturn();
+        System.out.println(response.getResponse().getContentAsString());
+    }
+
+    @Test
     void saveNewBeer() throws Exception {
         var beer = beerServiceImpl.listBeers().get(0);
         beer.setId(null);
@@ -101,6 +115,21 @@ class BeerControllerTest {
     }
 
     @Test
+    void updateBeerByIdBlankName() throws Exception {
+        var beer = beerServiceImpl.listBeers().getFirst();
+        beer.setBeerName("");
+        given(beerService.updateBeerById(any(UUID.class), any(BeerDTO.class))).willReturn(Optional.of(beer));
+        mockMvc.perform(put("/api/v1/beer/"+beer.getId())
+                        .accept(MediaType.APPLICATION_JSON)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(mapper.writeValueAsString(beer)))
+                .andExpect(status().isBadRequest());
+
+        verify(beerService, times(0)).updateBeerById(any(UUID.class), any(BeerDTO.class));
+    }
+
+
+    @Test
     void deleteBeerById() throws Exception {
         var beer =beerServiceImpl.listBeers().getFirst();
 
@@ -121,7 +150,7 @@ class BeerControllerTest {
 
         var beerMap = new HashMap<String, String>();
         beerMap.put("beerName", "Tuborg Gold");
-
+        given(beerService.patchUpdateBeerById(any(), any())).willReturn(Optional.of(beer));
         mockMvc.perform(patch("/api/v1/beer/"+beer.getId().toString())
                 .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
