@@ -2,6 +2,9 @@ package com.springframework.beer.entites;
 
 import com.springframework.beer.model.BeerStyle;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.UuidGenerator;
 
@@ -14,20 +17,35 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
 public class Beer {
     @Id
     @GeneratedValue(generator = "UUID")
     @UuidGenerator
     @Column(length = 36, updatable = false, nullable = false, columnDefinition = "varchar")
     private UUID id;
+
+    @NotBlank
+    @NotNull
+    @Size(max = 50)
+    @Column(length = 50)
     private String beerName;
+
+    @NotNull
     private BeerStyle beerStyle;
+
+    @NotBlank
+    @NotNull
+    @Size(max = 255)
     private String upc;
+
     private Integer quantityOnHand;
+
+    @NotNull
     private BigDecimal price;
+
     @Version
     private Integer version;
+
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
 
