@@ -1,21 +1,35 @@
 package com.springframework.beer.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.springframework.beer.entites.Beer;
 import com.springframework.beer.mappers.BeerMapper;
 import com.springframework.beer.model.BeerDTO;
 import com.springframework.beer.repositories.BeerRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MockMvcBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.beans.Transient;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
+import static org.hamcrest.Matchers.is;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 @SpringBootTest
 class BeerControllerIntegrationTest {
     @Autowired
@@ -26,6 +40,19 @@ class BeerControllerIntegrationTest {
 
     @Autowired
     BeerMapper mapper;
+
+    @Autowired
+    WebApplicationContext wac;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    MockMvc mockMvc;
+
+    @BeforeEach
+    void setUp() {
+        mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
+    }
     @Test
     void getBeerByIdNotFound() {
         assertThrows(NotFoundException.class, () -> {
@@ -142,4 +169,5 @@ class BeerControllerIntegrationTest {
             beerController.patchUpdateBeerById(UUID.randomUUID(), BeerDTO.builder().build());
         });
     }
+
 }
