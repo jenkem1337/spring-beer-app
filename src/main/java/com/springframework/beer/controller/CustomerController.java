@@ -48,7 +48,7 @@ public class CustomerController {
     public ResponseEntity<CustomerDTO> saveNewCustomer(@RequestBody CustomerDTO customerDTO) {
         var savedCustomer = customerService.saveNewCustomer(customerDTO);
         var httpHeader = new HttpHeaders();
-        httpHeader.add("Location", "/api/v1/customerDTO/"+savedCustomer.getId());
+        httpHeader.add("Location", "/api/v1/customer/"+savedCustomer.getId());
         return new ResponseEntity<>(savedCustomer, httpHeader, HttpStatus.CREATED);
     }
     @RequestMapping(value = "{customerId}",method = RequestMethod.GET)
