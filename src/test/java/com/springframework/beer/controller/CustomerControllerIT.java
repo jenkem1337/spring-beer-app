@@ -17,7 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-class CustomerControllerIntegrationTest {
+class CustomerControllerIT {
     @Autowired
     CustomerController customerController;
 
