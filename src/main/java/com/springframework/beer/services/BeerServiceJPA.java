@@ -90,7 +90,6 @@ public class BeerServiceJPA implements BeerService {
             if (StringUtils.hasText(beerDTO.getUpc())) {
                 beer.setUpc(beerDTO.getUpc());
             }
-            beer.setUpdatedDate(LocalDateTime.now());
             final var savedBeer = beerRepository.save(beer);
             atomicReference.set(Optional.of(mapper.beerToBeerDto(savedBeer)));
         }, () -> {
