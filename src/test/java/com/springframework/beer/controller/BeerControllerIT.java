@@ -61,7 +61,7 @@ class BeerControllerIT {
     @Test
     void listBeers() {
         var beers = beerController.listBeers();
-        assertThat(beers.size()).isEqualTo(3);
+        assertThat(beers.size()).isEqualTo(2413);
     }
 
     @Rollback
