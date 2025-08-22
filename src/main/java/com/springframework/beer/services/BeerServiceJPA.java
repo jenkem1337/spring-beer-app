@@ -1,5 +1,6 @@
 package com.springframework.beer.services;
 
+import com.springframework.beer.entites.Beer;
 import com.springframework.beer.mappers.BeerMapper;
 import com.springframework.beer.model.BeerDTO;
 import com.springframework.beer.repositories.BeerRepository;
@@ -8,7 +9,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -29,13 +30,22 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> listBeers() {
-        return beerRepository.findAll()
+    public List<BeerDTO> listBeers(String beerName) {
+        List<Beer> beerList;
+        if(StringUtils.hasText(beerName)) {
+            beerList = listBeersByName(beerName);
+        }
+        else {
+            beerList = beerRepository.findAll();
+        }
+        return beerList
                 .stream()
                 .map(mapper::beerToBeerDto)
                 .collect(Collectors.toList());
     }
-
+    private List<Beer> listBeersByName(String beerName){
+        return beerRepository.findAllByBeerNameIsLikeIgnoreCase("%"+beerName+"%");
+    }
     @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
         return mapper.beerToBeerDto(beerRepository.save(mapper.beerDtoToBeer(beerDTO)));
