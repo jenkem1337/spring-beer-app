@@ -51,9 +51,9 @@ public class BeerController {
         return new ResponseEntity<>(savedBeer, httpHeader,HttpStatus.CREATED);
     }
     @RequestMapping(method = RequestMethod.GET)
-    public List<BeerDTO> listBeers(){
+    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName){
         log.debug("BeerController::listBeers");
-        return beerService.listBeers();
+        return beerService.listBeers(beerName);
     }
     @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
     public BeerDTO getBeerById(
