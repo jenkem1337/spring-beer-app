@@ -14,6 +14,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.util.UUID;
 
@@ -44,6 +46,15 @@ class BeerControllerIT {
     void setUp() {
         mockMvc = MockMvcBuilders.webAppContextSetup(wac).build();
     }
+
+    @Test
+    void listBeersByName() throws Exception {
+        mockMvc.perform(get("/api/v1/beer")
+                .queryParam("beerName", "IPA"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.size()", is(336)));
+    }
+
     @Test
     void getBeerByIdNotFound() {
         assertThrows(NotFoundException.class, () -> {
@@ -60,7 +71,7 @@ class BeerControllerIT {
 
     @Test
     void listBeers() {
-        var beers = beerController.listBeers();
+        var beers = beerController.listBeers(null);
         assertThat(beers.size()).isEqualTo(2413);
     }
 
@@ -69,7 +80,7 @@ class BeerControllerIT {
     @Test
     void emptyList() {
         beerRepository.deleteAll();
-        var beers = beerController.listBeers();
+        var beers = beerController.listBeers(null);
         assertThat(beers.size()).isEqualTo(0);
 
     }
