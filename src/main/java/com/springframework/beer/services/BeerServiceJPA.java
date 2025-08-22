@@ -3,6 +3,7 @@ package com.springframework.beer.services;
 import com.springframework.beer.entites.Beer;
 import com.springframework.beer.mappers.BeerMapper;
 import com.springframework.beer.model.BeerDTO;
+import com.springframework.beer.model.BeerStyle;
 import com.springframework.beer.repositories.BeerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -30,21 +31,39 @@ public class BeerServiceJPA implements BeerService {
     }
 
     @Override
-    public List<BeerDTO> listBeers(String beerName) {
+    public List<BeerDTO> listBeers(String beerName, BeerStyle beerStyle, Boolean showInventory) {
         List<Beer> beerList;
-        if(StringUtils.hasText(beerName)) {
+        if(StringUtils.hasText(beerName) && beerStyle == null) {
             beerList = listBeersByName(beerName);
+        }
+        else if(!StringUtils.hasText(beerName) && beerStyle != null) {
+            beerList = listBeersByStyle(beerStyle);
+        }
+        else if (StringUtils.hasText(beerName) && beerStyle != null) {
+            beerList = listBeersByNameAndStyle(beerName, beerStyle);
         }
         else {
             beerList = beerRepository.findAll();
+        }
+        if(showInventory != null && !showInventory) {
+            beerList.forEach(beer -> beer.setQuantityOnHand(null));
         }
         return beerList
                 .stream()
                 .map(mapper::beerToBeerDto)
                 .collect(Collectors.toList());
     }
+
+    private List<Beer> listBeersByNameAndStyle(String beerName, BeerStyle beerStyle) {
+        return beerRepository.findAllByBeerNameIsLikeIgnoreCaseAndBeerStyle("%"+beerName+"%", beerStyle);
+    }
+
     private List<Beer> listBeersByName(String beerName){
         return beerRepository.findAllByBeerNameIsLikeIgnoreCase("%"+beerName+"%");
+    }
+
+    private List<Beer> listBeersByStyle(BeerStyle beerStyle) {
+        return beerRepository.findAllByBeerStyle(beerStyle  );
     }
     @Override
     public BeerDTO saveNewBeer(BeerDTO beerDTO) {
