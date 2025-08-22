@@ -1,6 +1,7 @@
 package com.springframework.beer.controller;
 
 import com.springframework.beer.model.BeerDTO;
+import com.springframework.beer.model.BeerStyle;
 import com.springframework.beer.services.BeerService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -51,9 +52,12 @@ public class BeerController {
         return new ResponseEntity<>(savedBeer, httpHeader,HttpStatus.CREATED);
     }
     @RequestMapping(method = RequestMethod.GET)
-    public List<BeerDTO> listBeers(@RequestParam(required = false) String beerName){
+    public List<BeerDTO> listBeers(
+            @RequestParam(required = false) String beerName,
+            @RequestParam(required = false) BeerStyle beerStyle,
+            @RequestParam(required = false) boolean showInventory){
         log.debug("BeerController::listBeers");
-        return beerService.listBeers(beerName);
+        return beerService.listBeers(beerName, beerStyle, showInventory);
     }
     @RequestMapping(value = "{beerId}", method = RequestMethod.GET)
     public BeerDTO getBeerById(
